@@ -5,6 +5,14 @@
 -- Created by Sergey Lerg for Corona Labs.
 -- License - MIT.
 
+require('mobdebug').start()
+
+function _conditional_breakpoint(condition)
+  if condition then
+    print('conditional breakpoint hit')
+  end
+end
+
 display.setStatusBar(display.HiddenStatusBar)
 system.activate('multitouch')
 if system.getInfo('build') >= '2015.2741' then -- Allow the game to be opened using an old Corona version

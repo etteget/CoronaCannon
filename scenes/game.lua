@@ -11,6 +11,7 @@ local eachframe = require('libs.eachframe') -- enterFrame manager
 local relayout = require('libs.relayout') -- Repositions elements on screen on window resize
 local sounds = require('libs.sounds') -- Music and sounds manager
 local tiled = require('libs.tiled') -- Tiled map loader
+local tileedittoolbar = require('libs.tileedittoolbar') -- Scrollable toolbar that offers possibility to edit tile map
 
 physics.start()
 physics.setGravity(0, 20) -- Default gravity is too boring
@@ -19,7 +20,7 @@ local scene = composer.newScene()
 
 -- LEVEL EDITOR
 -- Uncomment to enable level editing features
---require('classes.level_editor').enableLevelEditor(scene)
+require('classes.level_editor').enableLevelEditor(scene)
 
 local newCannon = require('classes.cannon').newCannon -- The ultimate weapon
 local newBug = require('classes.bug').newBug -- Enemies to kill, debug powers
@@ -31,7 +32,7 @@ function scene:create(event)
 	local _W, _H, _CX, _CY = relayout._W, relayout._H, relayout._CX, relayout._CY
 
 	local group = self.view
-	self.levelId = event.params
+	self.levelId = event.params.levelId
 	self.level = require('levels.' .. self.levelId)
 	local background = display.newRect(group, _CX, _CY, _W,  _H)
 	background.fill = {
@@ -63,7 +64,10 @@ function scene:create(event)
 			x = b.x, y = b.y,
 			rotation = b.rotation,
 			material = b.material,
-			name = b.name
+      baseDir = b.baseDir,
+			name = b.name,
+      width = self.map.map.tilewidth,
+      height = self.map.map.tileheight
 		}))
 	end
 
@@ -159,6 +163,27 @@ function scene:create(event)
 	if system.getInfo('platformName') == 'tvOS' then
 		switchMotionAndRotation()
 	end
+
+  -- editor bar & level editor activation
+  if event.params.isEditMode then
+
+    local options = {
+      buttonSize = 100,
+      tileBaseDir = "images/blocks/wood",
+      levelEditor = self
+    }
+
+    -- In edit mode we do allow pannig also a bit more upwards,
+    -- since toolbar now is at the bottom of the screen.
+    self.map.camera.high.y = self.map.camera.high.y + options.buttonSize
+    self:drawTileBorders()
+
+    local tileEditBar = tileedittoolbar.new(options)
+    group:insert(tileEditBar)
+
+
+  end
+
 end
 
 function scene:show(event)

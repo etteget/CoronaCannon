@@ -139,6 +139,7 @@ local function newTile(self, params)
         tile.x, tile.y = (params.x + 0.5) * map.tilewidth, (params.y + 0.5) * map.tileheight
     else
         tile = display.newImageRect(params.g, properties.image, properties.width, properties.height)
+        _conditional_breakpoint(tile == nil)
         tile.x, tile.y = params.x * map.tilewidth + properties.width / 2, (params.y + 1) * map.tileheight - properties.height / 2
     end
     if params.tint then

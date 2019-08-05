@@ -21,7 +21,18 @@ local specs = {
 }
 
 function _M.newBlock(params)
-	local block = display.newImageRect(params.g, 'images/blocks/' .. params.material .. '/' .. params.name .. '.png', specs[params.name].w, specs[params.name].h)
+  local block
+  if params.baseDir then
+    local baseDir = params.baseDir
+    local name = params.name
+    local width = params.width
+    local height = params.height
+    block = display.newImageRect(params.g, baseDir .. '/' .. name , width, height)
+    block.baseDir = baseDir
+  else
+    block = display.newImageRect(params.g, 'images/blocks/' .. params.material .. '/' .. params.name .. '.png', specs[params.name].w, specs[params.name].h)
+  end
+
 	block.x, block.y = params.x, params.y
 	block.rotation = params.rotation
 	-- This is an impact force threshold, the object will stay alive if force is below this value

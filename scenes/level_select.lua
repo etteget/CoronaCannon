@@ -10,7 +10,7 @@ local sounds = require('libs.sounds')
 
 local scene = composer.newScene()
 
-function scene:create()
+function scene:create(event)
 	local _W, _H, _CX, _CY = relayout._W, relayout._H, relayout._CX, relayout._CY
 
 	local group = self.view
@@ -32,7 +32,10 @@ function scene:create()
 
 	local function onLevelButtonRelease(event)
 		sounds.play('tap')
-		composer.gotoScene('scenes.reload_game', {params = event.target.id})
+    local params = {}
+    params.levelId = event.target.id
+    params.isEditMode = event.target.isEditMode
+    composer.gotoScene('scenes.reload_game', {params = params})
 	end
 
 	-- Button positioning is grid based, x,y are grid points
@@ -52,16 +55,19 @@ function scene:create()
 			x = x * spacing, y = 32 + y * spacing + 87,
 			onRelease = onLevelButtonRelease
 		})
+    button.isEditMode = event.params and event.params.isEditMode or false
 		buttonsGroup:insert(button)
 		table.insert(visualButtons, button)
 
 		-- Check if this level was completed
-		if databox['level' .. i] then
-			local check = display.newImageRect('images/check.png', 48, 48)
-			check.anchorX, check.anchorY = 1, 1
-			check.x, check.y = button.width - 3, button.height - 18
-			button:insert(check) -- Insert after positioning, because if inserted before, button.width/height will be different
-		end
+    if not button.isEditMode then
+      if databox['level' .. i] then
+        local check = display.newImageRect('images/check.png', 48, 48)
+        check.anchorX, check.anchorY = 1, 1
+        check.x, check.y = button.width - 3, button.height - 18
+        button:insert(check) -- Insert after positioning, because if inserted before, button.width/height will be different
+      end
+    end
 
 		x = x + 1
 		if x == 3 then

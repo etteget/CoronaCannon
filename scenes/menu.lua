@@ -1,6 +1,8 @@
 -- Menu Scene
 -- Displays game's name, the cannon and a couple buttons.
 
+require ("libs.extwidget")
+
 local composer = require('composer')
 local widget = require('widget')
 local controller = require('libs.controller')
@@ -77,23 +79,33 @@ function scene:create()
 		j = j + 1
 	end
 
-	self.playButton = widget.newButton({
-		defaultFile = 'images/buttons/play.png',
-		overFile = 'images/buttons/play-over.png',
-		width = 380, height = 200,
-		x = 400 - 190, y = -200 - 100,
-		onRelease = function()
-			sounds.play('tap')
-			composer.gotoScene('scenes.level_select', {time = 500, effect = 'slideLeft'})
-		end
-	})
-	group:insert(self.playButton)
+  self.playButton = widget.newDefaultTextButton({
+    label = "Play",
+    onRelease = function()
+      sounds.play('tap')
+      composer.gotoScene('scenes.level_select', {time = 500, effect = 'slideLeft'})
+    end
+  })
 
-	transition.to(self.playButton, {time = 1200, delay = 500, y = _H - 128 - self.playButton.height / 2, transition = easing.inExpo, onComplete = function(object1)
-		transition.to(object1, {time = 800, x = _W - 64 - self.playButton.width / 2, transition = easing.outExpo, onComplete = function(object2)
-			relayout.add(object2)
-		end})
-	end})
+  self.playButton.x = _W - 64 - self.playButton.width / 2
+  self.playButton.y = _H - 256 - self.playButton.height / 2
+
+	group:insert(self.playButton)
+  relayout.add(self.playButton)
+
+  self.editButton = widget.newDefaultTextButton({
+    label = "Edit",
+    onRelease = function()
+      sounds.play('tap')
+      composer.gotoScene('scenes.level_select', {time = 500, effect = 'slideLeft', params = { isEditMode = true }})
+    end
+  })
+
+  self.editButton.x = _W - 64 - self.editButton.width / 2
+  self.editButton.y = _H - 128 - self.editButton.height / 2
+
+	group:insert(self.editButton)
+  relayout.add(self.editButton)
 
 	local sidebar = newSidebar({g = group, onHide = function()
 		self:setVisualButtons()
